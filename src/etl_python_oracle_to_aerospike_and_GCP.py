@@ -2,6 +2,7 @@
 from __future__ import print_function
 # jdbc stuff
 import jaydebeapi
+import cx_Oracle
 import variables as v
 import configs as c
 import sys
@@ -32,6 +33,40 @@ class main:
   rec = {}
 
   def read_oracle_table(self):
+    # Check Oracle is accessible
+    try:
+      c.conn
+    except cx_Oracle.DatabaseError as e:
+      print("Error: {0} [{1}]".format(e.msg, e.code))
+      sys.exit(1)
+    else:
+      # Check if table exists
+      c.cursor2.execute (c.sqlTable)
+      if c.cursor2.fetchone()[0] == 1:
+        print("\nTable " + v._dbschema+"."+ v._dbtable + " exists\n")
+        c.cursor2.execute(c.sql)
+        # get column descriptions
+        columns = [i[0] for i in c.cursor2.description]
+        rows = c.cursor2.fetchall()
+        # write oracle data to the csv file
+        csv_file = open(v.dump_dir+v.filename, mode='w')
+        writer = csv.writer(csv_file, delimiter=',', lineterminator="\n", quoting=csv.QUOTE_NONNUMERIC)
+        # write column headers to csv file
+        writer.writerow(columns)
+        for row in rows:
+          writer.writerow(row)   ## write rows to csv file
+
+        print("writing to csv file " + v.dump_dir+ v.filename + " complete")
+        c.cursor2.close()
+        c.conn.close()
+        csv_file.close()
+        sys.exit(0)
+      else:
+        print("Table " + v._dbschema+"."+ v._dbtable + " does not exist, quitting!")
+        c.conn.close()
+        sys.exit(1)
+
+  def read_oracle_table_pre(self):
     # Check Oracle is accessible
     try:
       c.connection
