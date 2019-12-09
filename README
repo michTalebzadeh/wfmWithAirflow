@@ -1,0 +1,5 @@
+Setting up effective pipelines is essential to enterprises that have a hybrid model where they maintain data on Prem and in Cloud. Increasingly organizations are using Cloud for a variety of reasons. In this article, we will be talking through setting up pipelines to extract data from Oracle database upstream and load it into:
+ Aerospike Enterprise Edition (EE) on Prem
+ Aerospike EE running on dockers in Dataproc compute engines in Google Cloud Platform (GCP)
+Google BigQuery table.
+ Apache Airflow is used for creating data processing pipelines using Directed Acyclic Graph (DAG). Using Airflow, the workflow is divided into tasks that are executed independently for each stream.
