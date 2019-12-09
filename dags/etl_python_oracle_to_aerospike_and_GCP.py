@@ -68,7 +68,7 @@ t4 = BashOperator(
 
 # Read flat file and save it to an aerospike set on cloud dpcluster-m
 # note you are revoking the python command in cloud host through ssh
-create_command5 = 'su {{ params.username }} -c "/usr/bin/sshpass -p "{{ params.password }}" /usr/bin/ssh -v {{ params.username }}{{ params.at }}{{ params.host2 }} /usr/bin/python /home/hduser/dba/bin/python/etl_oracle_aerospike/src/read_oracle_table.py 2 > "/d4T/hduser/airflow/run_logs/t5_{{ params.host2 }}_etl_python_oracle_to_aerospike_and_GCP_save_to_aerospike_set_on_docker"_"`date +%Y%m%d_%H%M`".log 2>&1"'
+create_command5 = 'su {{ params.username }} -c "/usr/bin/sshpass -p "{{ params.password }}" /usr/bin/ssh -v {{ params.username }}{{ params.at }}{{ params.host2 }} /usr/bin/python /home/hduser/dba/bin/python/etl_python_oracle_to_aerospike_and_GCP/src/etl_python_oracle_to_aerospike_and_GCP.py 2 > "/d4T/hduser/airflow/run_logs/t5_{{ params.host2 }}_etl_python_oracle_to_aerospike_and_GCP_save_to_aerospike_set_on_docker"_"`date +%Y%m%d_%H%M`".log 2>&1"'
 t5 = BashOperator(
      task_id='t5_Read_flat_file_and_save_it_to_an_aerospike_set_on_cloud',
     bash_command=create_command5,
@@ -76,7 +76,7 @@ t5 = BashOperator(
 
 # Read and confirm that data stored in aerospike set on cloud dpcluster-m
 # note you are revoking the python command in cloud host through ssh
-create_command6 = 'su {{ params.username }} -c "/usr/bin/sshpass -p "{{ params.password }}" /usr/bin/ssh -v {{ params.username }}{{ params.at }}{{ params.host2 }} /usr/bin/python /home/hduser/dba/bin/python/etl_oracle_aerospike/src/read_oracle_table.py  3 > "/d4T/hduser/airflow/run_logs/t6_{{ params.host2 }}_etl_python_oracle_to_aerospike_and_GCP_read_from_aerospike_set_on_docker"_"`date +%Y%m%d_%H%M`".log 2>&1"'
+create_command6 = 'su {{ params.username }} -c "/usr/bin/sshpass -p "{{ params.password }}" /usr/bin/ssh -v {{ params.username }}{{ params.at }}{{ params.host2 }} /usr/bin/python /home/hduser/dba/bin/python/etl_python_oracle_to_aerospike_and_GCP/src/etl_python_oracle_to_aerospike_and_GCP.py 3 > "/d4T/hduser/airflow/run_logs/t6_{{ params.host2 }}_etl_python_oracle_to_aerospike_and_GCP_read_from_aerospike_set_on_docker"_"`date +%Y%m%d_%H%M`".log 2>&1"'
 t6 = BashOperator(
     task_id='t6_Read_and_confirm_that_data_stored_in_aerospike_set_on_cloud',
     bash_command=create_command6,
@@ -103,6 +103,12 @@ t9 = BashOperator(
     bash_command=create_command9,
     dag=dag)
 
+# Read data from BigQuery table
+create_command10 = 'su {{ params.username }} -c "/home/hduser/dba/bin/python/etl_python_oracle_to_aerospike_and_GCP.ksh -O 7 > "/d4T/hduser/airflow/run_logs/t10_etl_python_oracle_to_aerospike_and_GCP_Read_data_from_BigQuery_table"_"`date +%Y%m%d_%H%M`"."log" 2>&1 "'
+t10 = BashOperator(
+    task_id='t10_Read_data_from_BigQuery_table',
+    bash_command=create_command10,
+    dag=dag)
 
 
 t2.set_upstream(t1)
@@ -113,3 +119,4 @@ t6.set_upstream(t5)
 t7.set_upstream(t1)
 t8.set_upstream(t7)
 t9.set_upstream(t8)
+t10.set_upstream(t9)
